@@ -1,0 +1,10 @@
+com\inventory\config\RestClientConfig.class
+com\inventory\client\ProcurementClient$ProcurementRequest.class
+com\inventory\dto\MinimumStockRequest.class
+com\inventory\service\InventoryService.class
+com\inventory\client\ProductDetails.class
+com\inventory\dto\LowStockDto.class
+com\inventory\client\ProductClient.class
+com\inventory\client\ProcurementClient.class
+com\inventory\dto\ReplenishmentRequest.class
+com\inventory\client\WarehouseClient.class

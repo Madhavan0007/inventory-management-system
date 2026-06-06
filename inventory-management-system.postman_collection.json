@@ -1,0 +1,432 @@
+{
+  "info": {
+    "name": "Multi-Warehouse Inventory Management System",
+    "description": "End-to-end API test collection for the integrated product, warehouse, inventory, procurement, and reporting services.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Setup - Product, Warehouse, Supplier",
+      "item": [
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Category created', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('categoryId', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics\"\n}"
+            },
+            "url": "{{productBaseUrl}}/categories"
+          }
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Product created', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('productId', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laptop\",\n  \"sku\": \"LAP-001\",\n  \"price\": 55000,\n  \"description\": \"Business laptop\",\n  \"categoryId\": {{categoryId}}\n}"
+            },
+            "url": "{{productBaseUrl}}/products"
+          }
+        },
+        {
+          "name": "Create Warehouse",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Warehouse created', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('warehouseId', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Warehouse\",\n  \"location\": \"Chennai\",\n  \"capacity\": 100\n}"
+            },
+            "url": "{{warehouseBaseUrl}}/warehouses"
+          }
+        },
+        {
+          "name": "Create Supplier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Supplier created', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('supplierId', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supplierName\": \"ABC Suppliers\",\n  \"email\": \"abc@example.com\",\n  \"phoneNumber\": \"9999999999\",\n  \"address\": \"Chennai\"\n}"
+            },
+            "url": "{{procurementBaseUrl}}/suppliers"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Inventory Tracking",
+      "item": [
+        {
+          "name": "Set Minimum Stock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"minimumStock\": 20\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/minimum-stock"
+          }
+        },
+        {
+          "name": "Inbound Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": 10\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/inbound"
+          }
+        },
+        {
+          "name": "Get Inventory By Product And Warehouse",
+          "request": {
+            "method": "GET",
+            "url": "{{inventoryBaseUrl}}/inventory/product/{{productId}}/warehouse/{{warehouseId}}"
+          }
+        },
+        {
+          "name": "Get Low Stock Items",
+          "request": {
+            "method": "GET",
+            "url": "{{inventoryBaseUrl}}/inventory/low-stock"
+          }
+        },
+        {
+          "name": "Outbound Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": 2\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/outbound"
+          }
+        },
+        {
+          "name": "Adjust Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"newQuantity\": 8,\n  \"reason\": \"Cycle count correction\"\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/adjust"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Replenishment And Procurement",
+      "item": [
+        {
+          "name": "Create Replenishment Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Procurement request created', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('purchaseRequestId', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"supplierId\": {{supplierId}}\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/replenishment/request"
+          }
+        },
+        {
+          "name": "Approve Purchase Request",
+          "request": {
+            "method": "PUT",
+            "url": "{{procurementBaseUrl}}/procurement/approve/{{purchaseRequestId}}"
+          }
+        },
+        {
+          "name": "Mark Purchase Request Delivered",
+          "request": {
+            "method": "PUT",
+            "url": "{{procurementBaseUrl}}/procurement/delivered/{{purchaseRequestId}}"
+          }
+        },
+        {
+          "name": "Verify Inventory After Delivery",
+          "request": {
+            "method": "GET",
+            "url": "{{inventoryBaseUrl}}/inventory/product/{{productId}}/warehouse/{{warehouseId}}"
+          }
+        },
+        {
+          "name": "Get All Procurement Requests",
+          "request": {
+            "method": "GET",
+            "url": "{{procurementBaseUrl}}/procurement"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Reporting",
+      "item": [
+        {
+          "name": "Inventory Valuation",
+          "request": {
+            "method": "GET",
+            "url": "{{reportingBaseUrl}}/reports/inventory-valuation"
+          }
+        },
+        {
+          "name": "Stock Movement Report",
+          "request": {
+            "method": "GET",
+            "url": "{{reportingBaseUrl}}/reports/stock-movement"
+          }
+        },
+        {
+          "name": "Warehouse Performance Report",
+          "request": {
+            "method": "GET",
+            "url": "{{reportingBaseUrl}}/reports/warehouse-performance"
+          }
+        },
+        {
+          "name": "Forecast Report",
+          "request": {
+            "method": "GET",
+            "url": "{{reportingBaseUrl}}/reports/forecast"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Negative Tests",
+      "item": [
+        {
+          "name": "Inbound Invalid Product Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 999999,\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": 5\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/inbound"
+          }
+        },
+        {
+          "name": "Inbound Over Capacity Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": 100000\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/inbound"
+          }
+        },
+        {
+          "name": "Outbound More Than Available Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": 100000\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/outbound"
+          }
+        },
+        {
+          "name": "Negative Quantity Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"warehouseId\": {{warehouseId}},\n  \"quantity\": -1\n}"
+            },
+            "url": "{{inventoryBaseUrl}}/inventory/inbound"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "productBaseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "warehouseBaseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "inventoryBaseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "procurementBaseUrl",
+      "value": "http://localhost:8084"
+    },
+    {
+      "key": "reportingBaseUrl",
+      "value": "http://localhost:8086"
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    },
+    {
+      "key": "productId",
+      "value": "1"
+    },
+    {
+      "key": "warehouseId",
+      "value": "1"
+    },
+    {
+      "key": "supplierId",
+      "value": "1"
+    },
+    {
+      "key": "purchaseRequestId",
+      "value": "1"
+    }
+  ]
+}
